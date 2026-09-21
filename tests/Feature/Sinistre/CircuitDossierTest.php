@@ -6,7 +6,9 @@ use App\Enums\MotifRejet;
 use App\Enums\NatureSinistre;
 use App\Enums\StatutDossier;
 use App\Enums\TypeEvenement;
+use App\Exceptions\TransitionInterdite;
 use App\Models\User;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
@@ -202,6 +204,20 @@ class CircuitDossierTest extends TestCase
             'type' => TypeEvenement::Decision->value,
         ]);
         $this->assertSame($responsable->id, $dossier->evenements()->first()->auteur_id);
+    }
+
+    /**
+     * Un gestionnaire qui tente une transition non autorisée pose un geste normal :
+     * le refus lui est renvoyé, mais il n'a rien à faire dans le journal d'erreurs,
+     * qui doit rester réservé aux vraies pannes.
+     */
+    #[Test]
+    public function un_refus_de_circuit_nencombre_pas_le_journal_derreurs(): void
+    {
+        $this->assertFalse(
+            app(ExceptionHandler::class)->shouldReport(TransitionInterdite::parce('refus de test')),
+            'Un refus du circuit ne doit pas être reporté comme une erreur applicative.',
+        );
     }
 
     #[Test]

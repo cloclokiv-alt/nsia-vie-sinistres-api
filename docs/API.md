@@ -222,8 +222,13 @@ Statuts acceptés : `conforme`, `non_conforme` (motif obligatoire), `sans_objet`
 
 Certificat médical de décès, rapport médical et certificat d'invalidité ne sont ni
 listés, ni déposés, ni contrôlés, ni téléchargés par qui n'est pas médecin-conseil.
-Ils n'apparaissent même pas en creux dans la liste. Le pli médical arrive fermé au
-guichet : l'agent enregistre l'enveloppe, le médecin en verse le contenu.
+Le pli médical arrive fermé au guichet : l'agent enregistre l'enveloppe, le médecin
+en verse le contenu.
+
+Ce qui est protégé, c'est le **contenu** de la pièce, pas le fait qu'on l'attende :
+le gestionnaire voit qu'une pièce médicale manque encore (dans `pieces_manquantes`
+et dans le motif de blocage d'une transition), sans pouvoir la lister ni l'ouvrir.
+Sans quoi il croirait le dossier complet et n'aurait personne à relancer.
 
 ---
 

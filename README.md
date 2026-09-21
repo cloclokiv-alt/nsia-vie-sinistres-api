@@ -36,7 +36,7 @@ dans `StatutDossier::suivants()` et nulle part ailleurs.
 | Aucun franc perdu | La répartition du capital travaille en entiers, reliquat au plus fort reste |
 | Pas de double paiement | Contrainte d'unicité en base sur le bénéficiaire, doublée d'un contrôle métier |
 | Montant non saisissable | Le montant d'un règlement vient de la liquidation, jamais du client |
-| Secret médical | Pièces médicales invisibles hors médecin-conseil, y compris en liste |
+| Secret médical | Contenu des pièces médicales réservé au médecin-conseil ; les autres savent qu'elles manquent, sans pouvoir les ouvrir |
 | Pièces non devinables | Stockage hors dossier public, chemin jamais exposé, accès par politique |
 
 ---

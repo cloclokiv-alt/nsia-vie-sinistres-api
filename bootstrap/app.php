@@ -20,6 +20,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->throttleApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Un refus du circuit est une règle métier qui s'applique, pas un incident :
+        // le journaliser en erreur noierait les vraies pannes sous les gestes normaux
+        // (un gestionnaire qui tente une transition non autorisée, par exemple).
+        $exceptions->dontReport(TransitionInterdite::class);
+
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
