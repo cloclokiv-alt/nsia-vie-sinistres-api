@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'dossier_sinistre_id', 'nom', 'prenoms', 'qualite', 'statut', 'quote_part',
     'date_naissance', 'type_piece_identite', 'numero_piece_identite',
     'telephone', 'email', 'adresse', 'mode_reglement', 'coordonnees_reglement',
+    'motif_ecartement',
 ])]
 class Beneficiaire extends Model
 {
