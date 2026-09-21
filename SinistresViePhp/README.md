@@ -60,6 +60,14 @@ composer install
 vendor/bin/phpunit          # 64 tests, aucune base requise
 ```
 
+### La version de PHP est figée à 8.2, volontairement
+
+`composer.json` déclare `config.platform.php = "8.2.33"`, repris de `QualityErpPhp`.
+Composer résout alors **comme si PHP 8.2 était installé**, quelle que soit la version du
+poste. Sans cette ligne, un atelier en 8.4 fige des paquets que LWS refusera d'installer :
+c'est arrivé une fois ici, 25 paquets exigeaient plus que 8.2, et seul le passage de la CI
+sur 8.2 l'a révélé. Ne pas la retirer.
+
 ⚠️ **`ext-pdo_sqlsrv` est exigé par `composer.json`** dès que la persistance sera en
 place. Le poste de développement l'embarque (voir `.devcontainer/symfony/` du dépôt ERP).
 

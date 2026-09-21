@@ -41,6 +41,9 @@
             "symfony/flex": true,
             "symfony/runtime": true
         },
+        "platform": {
+            "php": "8.2.33"
+        },
         "sort-packages": true
     },
     "minimum-stability": "stable",
