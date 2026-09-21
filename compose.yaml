@@ -1,0 +1,62 @@
+# Deux conteneurs : l'atelier PHP et le moteur MySQL.
+#
+# Une seule commande suffit : « docker compose up ». Rien n'est a installer sur le
+# poste, ni PHP ni Composer ni MySQL — c'est tout l'interet, sur un poste Windows
+# ou installer PHP demande plus de travail que de lancer cette pile.
+services:
+
+  api:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    # Le code du poste est monte dans le conteneur : une modification est prise en
+    # compte au rechargement de la page, sans reconstruire l'image.
+    volumes:
+      - .:/app
+    ports:
+      # gauche = port du poste, droite = port dans le conteneur. Changez le gauche
+      # si 8000 est deja pris chez vous ; la console web attend cette adresse.
+      - "8000:8000"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      PORT_HOTE: "8000"
+      # Ces valeurs l'emportent sur .env : Laravel ne reecrit jamais une variable
+      # deja presente dans l'environnement.
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_DATABASE: nsia_vie_sinistres
+      DB_USERNAME: nsia
+      DB_PASSWORD: nsia
+      # Sur un poste, tout tient en memoire : rien a installer de plus.
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: log
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    # MySQL 8, la version verifiee par l'integration continue et visee en production.
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: racine
+      MYSQL_DATABASE: nsia_vie_sinistres
+      MYSQL_USER: nsia
+      MYSQL_PASSWORD: nsia
+    volumes:
+      - donnees-mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-unsia", "-pnsia"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    # Aucun port publie : le moteur n'est joignable que depuis le conteneur PHP, par
+    # le reseau prive de Docker. Rien n'est expose sur le poste ni au-dela.
+
+volumes:
+  donnees-mysql:

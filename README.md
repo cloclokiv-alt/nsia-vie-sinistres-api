@@ -62,7 +62,32 @@ dans `StatutDossier::suivants()` et nulle part ailleurs.
 - Composer 2
 - MySQL 8 (ou SQLite pour un essai immédiat)
 
-### Installation
+### Le plus simple : Docker
+
+Une seule commande, rien à installer sur le poste — ni PHP, ni Composer, ni MySQL.
+C'est la voie recommandée sous Windows.
+
+```bash
+git clone <url-du-depot> && cd nsia-vie-sinistres-api
+docker compose up
+```
+
+Le premier démarrage prend deux à trois minutes : il construit l'image, installe les
+dépendances, crée le schéma et charge les dossiers de démonstration. Les suivants sont
+immédiats. L'API répond ensuite sur **http://localhost:8000**.
+
+| Commande | Effet |
+| --- | --- |
+| `docker compose up` | Démarre l'API et la base |
+| `docker compose down` | Arrête tout, **en gardant** les données |
+| `docker compose down -v` | Arrête et **efface** la base — repart de zéro |
+| `docker compose exec api php artisan test` | Lance la suite de tests |
+| `docker compose exec api bash` | Ouvre un terminal dans le conteneur |
+
+Si le port 8000 est déjà pris sur votre poste, changez le chiffre de **gauche** dans
+`compose.yaml` (`"8010:8000"` par exemple) et adressez l'API sur ce port.
+
+### À la main, avec PHP installé
 
 ```bash
 git clone <url-du-depot> && cd nsia-vie-sinistres-api
