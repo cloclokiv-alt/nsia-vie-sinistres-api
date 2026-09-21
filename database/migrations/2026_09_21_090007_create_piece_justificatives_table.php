@@ -35,7 +35,9 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['dossier_sinistre_id', 'statut']);
-            $table->index(['dossier_sinistre_id', 'beneficiaire_id', 'type']);
+            // Nom donné à la main : le nom généré par Laravel dépasserait les
+            // 64 caractères que MySQL accepte pour un identifiant.
+            $table->index(['dossier_sinistre_id', 'beneficiaire_id', 'type'], 'pieces_dossier_beneficiaire_type_index');
         });
     }
 
