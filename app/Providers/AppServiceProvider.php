@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Hors production, toute erreur discrète (chargement paresseux, attribut inexistant)
-     * devient une exception : les bugs sortent en développement, pas chez l'apprenant.
+     * devient une exception : les bugs sortent en développement, pas au guichet.
      */
     protected function configureModels(): void
     {
@@ -41,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('api', fn (Request $request) => Limit::perMinute(60)
             ->by($request->user()?->id ?: $request->ip()));
 
-        // Les routes d'inscription et de connexion sont les plus exposées au bourrage.
+        // La route de connexion est la plus exposée au bourrage d'identifiants.
         RateLimiter::for('auth', fn (Request $request) => [
             Limit::perMinute(10)->by($request->ip()),
             Limit::perMinute(5)->by((string) $request->input('email')),

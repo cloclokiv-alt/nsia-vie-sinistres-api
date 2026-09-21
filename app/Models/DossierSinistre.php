@@ -7,6 +7,7 @@ use App\Enums\NatureSinistre;
 use App\Enums\StatutDossier;
 use App\Policies\DossierSinistrePolicy;
 use App\Support\CircuitDossier;
+use App\Support\NumeroSequence;
 use Database\Factories\DossierSinistreFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\RouteKey;
@@ -62,6 +63,17 @@ class DossierSinistre extends Model
             'clos_le' => 'datetime',
             'capital_liquide_xaf' => 'integer',
         ];
+    }
+
+    /**
+     * Même règle que pour le registre : le numéro de sinistre est arrêté
+     * à l'insertion.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (self $dossier): void {
+            $dossier->numero_sinistre ??= NumeroSequence::sinistre($dossier->date_declaration);
+        });
     }
 
     /**

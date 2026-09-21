@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Enums\CanalReception;
 use App\Models\Courrier;
 use App\Models\User;
-use App\Support\NumeroSequence;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,7 +18,6 @@ class CourrierFactory extends Factory
     public function definition(): array
     {
         return [
-            'numero_ordre' => fn () => NumeroSequence::courrier(),
             'canal' => CanalReception::Guichet,
             'date_reception' => now(),
             'expediteur_nom' => mb_strtoupper(fake()->lastName()).' '.fake()->firstName(),
@@ -30,7 +28,6 @@ class CourrierFactory extends Factory
             'nombre_pieces' => fake()->numberBetween(1, 6),
             'numero_police_declare' => 'VIE-'.fake()->numerify('########'),
             'recu_par_id' => User::factory()->agentCourrier(),
-            'accuse_code' => fn () => NumeroSequence::accuse(),
             'observation' => null,
         ];
     }
@@ -40,8 +37,11 @@ class CourrierFactory extends Factory
         return $this->state(fn () => ['canal' => $canal]);
     }
 
-    public function sansAccuse(): static
+    /**
+     * Force un code d'accusé précis (utile pour vérifier une recherche).
+     */
+    public function accuse(string $code): static
     {
-        return $this->state(fn () => ['accuse_code' => null]);
+        return $this->state(fn () => ['accuse_code' => $code]);
     }
 }

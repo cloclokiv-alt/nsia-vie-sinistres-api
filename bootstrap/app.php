@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\TransitionInterdite;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -23,8 +24,17 @@ return Application::configure(basePath: dirname(__DIR__))
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
 
-        // L'application mobile est francophone : les messages d'erreur du framework
+        // Les agents sont francophones : les messages d'erreur du framework
         // le sont aussi, sans changer les codes HTTP attendus par le client.
+        // Une transition de circuit refusée n'est pas une erreur technique :
+        // c'est une règle métier, renvoyée comme une erreur de validation.
+        $exceptions->render(fn (TransitionInterdite $e, Request $request) => $request->expectsJson()
+            ? response()->json([
+                'message' => $e->getMessage(),
+                'errors' => ['statut' => [$e->getMessage()]],
+            ], 422)
+            : null);
+
         $exceptions->render(fn (AuthenticationException $e, Request $request) => $request->expectsJson()
             ? response()->json(['message' => __('Authentification requise.')], 401)
             : null);

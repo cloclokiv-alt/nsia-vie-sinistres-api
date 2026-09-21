@@ -2,13 +2,15 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
+    /**
+     * Ce seeder ne coupe pas les événements de modèle (pas de WithoutModelEvents) :
+     * les numéros d'ordre et de sinistre sont attribués par un hook « creating ».
+     * Les museler produirait des lignes sans numéro.
+     */
     public function run(): void
     {
         $this->call([
