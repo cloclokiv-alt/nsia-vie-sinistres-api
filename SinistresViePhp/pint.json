@@ -1,0 +1,9 @@
+{
+    "preset": "symfony",
+    "rules": {
+        "declare_strict_types": false,
+        "ordered_imports": { "sort_algorithm": "alpha" },
+        "no_unused_imports": true,
+        "php_unit_method_casing": { "case": "camel_case" }
+    }
+}

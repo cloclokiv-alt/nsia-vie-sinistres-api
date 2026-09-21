@@ -72,3 +72,32 @@ jobs:
           php artisan db:seed --force
           php artisan migrate:fresh --force
           php artisan test
+
+  symfony:
+    name: Transposition Symfony
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: SinistresViePhp
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          # 8.2 est la version de l'hebergement LWS : c'est elle qui fait foi, pas
+          # celle du poste. Tester plus haut laisserait passer une syntaxe refusee
+          # en production.
+          php-version: '8.2'
+          extensions: mbstring, intl, pdo
+          coverage: none
+
+      # pdo_sqlsrv n'est pas installable sur le runner : la suite n'en a pas besoin,
+      # elle est ecrite sans base. La verification contre SQL Server se fait sur le
+      # poste de developpement, dont le conteneur embarque l'extension.
+      - run: composer install --prefer-dist --no-interaction --no-progress --ignore-platform-req=ext-pdo_sqlsrv
+
+      - name: Format (preréglage Symfony)
+        run: vendor/bin/pint --test
+
+      - name: Tests
+        run: vendor/bin/phpunit
