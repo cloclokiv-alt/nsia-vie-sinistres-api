@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\CanalReception;
 use App\Policies\CourrierPolicy;
+use App\Support\NumeroSequence;
 use Database\Factories\CourrierFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\RouteKey;
@@ -42,6 +43,19 @@ class Courrier extends Model
             'oriente_le' => 'datetime',
             'nombre_pieces' => 'integer',
         ];
+    }
+
+    /**
+     * Le numéro d'ordre et le code d'accusé sont attribués au moment de
+     * l'insertion, jamais à la construction : entre les deux, un autre poste
+     * a pu enregistrer un courrier et prendre le numéro.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (self $courrier): void {
+            $courrier->numero_ordre ??= NumeroSequence::courrier($courrier->date_reception);
+            $courrier->accuse_code ??= NumeroSequence::accuse();
+        });
     }
 
     /**

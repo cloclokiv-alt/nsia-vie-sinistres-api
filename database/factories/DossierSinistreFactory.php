@@ -7,7 +7,6 @@ use App\Enums\StatutDossier;
 use App\Models\Contrat;
 use App\Models\DossierSinistre;
 use App\Models\User;
-use App\Support\NumeroSequence;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -23,7 +22,6 @@ class DossierSinistreFactory extends Factory
         $survenance = now()->subMonths(2)->startOfDay();
 
         return [
-            'numero_sinistre' => fn () => NumeroSequence::sinistre(),
             'contrat_id' => Contrat::factory(),
             'courrier_id' => null,
             'nature' => NatureSinistre::Deces,

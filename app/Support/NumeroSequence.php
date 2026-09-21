@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Courrier;
 use App\Models\DossierSinistre;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -57,6 +58,31 @@ final class NumeroSequence
         } while (Courrier::query()->where('accuse_code', $code)->exists());
 
         return $code;
+    }
+
+    /**
+     * Rejoue une création dont le numéro s'est révélé déjà pris.
+     *
+     * La lecture du dernier numéro et l'insertion ne sont pas atomiques : deux
+     * guichets qui enregistrent au même instant peuvent viser le même numéro.
+     * L'index unique en base les départage, et le perdant rejoue avec le suivant.
+     *
+     * @template T
+     *
+     * @param  callable(): T  $creation
+     * @return T
+     */
+    public static function enCasDeCollision(callable $creation, int $tentatives = 3): mixed
+    {
+        for ($essai = 1; ; $essai++) {
+            try {
+                return $creation();
+            } catch (UniqueConstraintViolationException $e) {
+                if ($essai >= $tentatives) {
+                    throw $e;
+                }
+            }
+        }
     }
 
     /**

@@ -27,12 +27,21 @@ class PieceJustificativePolicy
     }
 
     /**
-     * Déposer le scan d'une pièce : le bureau courrier comme le gestionnaire.
+     * Déposer le scan d'une pièce.
+     *
+     * Le bureau courrier et le gestionnaire versent les pièces ordinaires.
+     * Les pièces médicales arrivent sous pli fermé à l'attention du
+     * médecin-conseil : le guichet enregistre l'enveloppe sans l'ouvrir,
+     * et seul le médecin verse son contenu au dossier.
      */
     public function deposer(User $user, PieceJustificative $piece): bool
     {
-        if (! $user->actif || ! $this->view($user, $piece)) {
+        if (! $user->actif) {
             return false;
+        }
+
+        if ($piece->estMedicale()) {
+            return $user->peutConsulterLeMedical();
         }
 
         return $user->peutReceptionner() || $user->peutInstruire();

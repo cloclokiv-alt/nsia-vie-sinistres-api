@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\TransitionInterdite;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -19,12 +20,26 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->throttleApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Un refus du circuit est une règle métier qui s'applique, pas un incident :
+        // le journaliser en erreur noierait les vraies pannes sous les gestes normaux
+        // (un gestionnaire qui tente une transition non autorisée, par exemple).
+        $exceptions->dontReport(TransitionInterdite::class);
+
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
 
-        // L'application mobile est francophone : les messages d'erreur du framework
+        // Les agents sont francophones : les messages d'erreur du framework
         // le sont aussi, sans changer les codes HTTP attendus par le client.
+        // Une transition de circuit refusée n'est pas une erreur technique :
+        // c'est une règle métier, renvoyée comme une erreur de validation.
+        $exceptions->render(fn (TransitionInterdite $e, Request $request) => $request->expectsJson()
+            ? response()->json([
+                'message' => $e->getMessage(),
+                'errors' => ['statut' => [$e->getMessage()]],
+            ], 422)
+            : null);
+
         $exceptions->render(fn (AuthenticationException $e, Request $request) => $request->expectsJson()
             ? response()->json(['message' => __('Authentification requise.')], 401)
             : null);
