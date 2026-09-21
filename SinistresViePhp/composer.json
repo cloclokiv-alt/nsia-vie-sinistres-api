@@ -21,16 +21,33 @@
         "symfony/validator": "^7.1"
     },
     "require-dev": {
+        "laravel/pint": "^1.27",
         "phpunit/phpunit": "^11.3",
         "symfony/browser-kit": "^7.1",
         "symfony/css-selector": "^7.1"
     },
-    "autoload": { "psr-4": { "App\\": "src/" } },
-    "autoload-dev": { "psr-4": { "App\\Tests\\": "tests/" } },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
     "config": {
-        "allow-plugins": { "symfony/flex": true, "symfony/runtime": true },
+        "allow-plugins": {
+            "symfony/flex": true,
+            "symfony/runtime": true
+        },
         "sort-packages": true
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "lint": "vendor/bin/pint",
+        "lint:check": "vendor/bin/pint --test"
+    }
 }

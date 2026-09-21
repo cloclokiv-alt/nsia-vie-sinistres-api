@@ -25,11 +25,7 @@ final class FormatReference
     public static function composer(SerieReference $serie, int $annee, int $rang): string
     {
         if ($rang < 1 || $rang > self::RANG_MAXIMAL) {
-            throw new \DomainException(sprintf(
-                'Le rang %d sort du format sur quatre chiffres : le compteur de %s est à revoir.',
-                $rang,
-                $serie->value,
-            ));
+            throw new \DomainException(sprintf('Le rang %d sort du format sur quatre chiffres : le compteur de %s est à revoir.', $rang, $serie->value));
         }
 
         return sprintf('%s%02d-%04d', $serie->prefixe(), $annee % 100, $rang);
